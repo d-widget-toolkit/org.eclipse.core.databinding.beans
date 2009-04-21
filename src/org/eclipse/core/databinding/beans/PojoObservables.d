@@ -10,7 +10,9 @@
  *     Matthew Hall - bug 221704
  *******************************************************************************/
 
-package org.eclipse.core.databinding.beans;
+module org.eclipse.core.databinding.beans.PojoObservables;
+
+import java.lang.all;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyDescriptor;

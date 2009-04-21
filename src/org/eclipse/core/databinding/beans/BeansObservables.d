@@ -12,7 +12,9 @@
  *     Matthew Hall - bug 221704
  *     Thomas Kratz - bug 213787
  *******************************************************************************/
-package org.eclipse.core.databinding.beans;
+module org.eclipse.core.databinding.beans.BeansObservables;
+
+import java.lang.all;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;

@@ -10,7 +10,9 @@
  *     Matthew Hall - bug 245183
  ******************************************************************************/
 
-package org.eclipse.core.internal.databinding.beans;
+module org.eclipse.core.internal.databinding.beans.BeanObservableValueDecorator;
+
+import java.lang.all;
 
 import java.beans.PropertyDescriptor;
 

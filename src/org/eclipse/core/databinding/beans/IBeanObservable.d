@@ -10,7 +10,9 @@
  *     Brad Reynolds - bug 147515
  ******************************************************************************/
 
-package org.eclipse.core.databinding.beans;
+module org.eclipse.core.databinding.beans.IBeanObservable;
+
+import java.lang.all;
 
 import java.beans.PropertyDescriptor;
 

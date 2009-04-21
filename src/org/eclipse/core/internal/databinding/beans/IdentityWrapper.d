@@ -10,7 +10,9 @@
  *     Daniel Kruegler - bug 137435
  *******************************************************************************/
 
-package org.eclipse.core.internal.databinding.beans;
+module org.eclipse.core.internal.databinding.beans.IdentityWrapper;
+
+import java.lang.all;
 
 /**
  * Used for wrapping objects that define their own implementations of equals()

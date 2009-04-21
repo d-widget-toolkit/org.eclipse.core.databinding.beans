@@ -10,7 +10,9 @@
  *     Matthew Hall - bug 245183
  ******************************************************************************/
 
-package org.eclipse.core.internal.databinding.beans;
+module org.eclipse.core.internal.databinding.beans.BeanObservableMapDecorator;
+
+import java.lang.all;
 
 import java.beans.PropertyDescriptor;
 import java.util.Collection;

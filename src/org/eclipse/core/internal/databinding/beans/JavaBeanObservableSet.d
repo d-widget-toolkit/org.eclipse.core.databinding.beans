@@ -11,7 +11,9 @@
  *     Matthew Hall - bugs 221351, 223164, 244098
  *******************************************************************************/
 
-package org.eclipse.core.internal.databinding.beans;
+module org.eclipse.core.internal.databinding.beans.JavaBeanObservableSet;
+
+import java.lang.all;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyDescriptor;

@@ -10,7 +10,9 @@
  *     Matthew Hall - bugs 208858, 245183
  ******************************************************************************/
 
-package org.eclipse.core.internal.databinding.beans;
+module org.eclipse.core.internal.databinding.beans.BeanObservableListDecorator;
+
+import java.lang.all;
 
 import java.beans.PropertyDescriptor;
 import java.util.Collection;
