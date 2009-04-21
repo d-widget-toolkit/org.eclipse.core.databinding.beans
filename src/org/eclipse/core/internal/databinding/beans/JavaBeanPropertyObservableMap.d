@@ -11,6 +11,7 @@
  *******************************************************************************/
 
 module org.eclipse.core.internal.databinding.beans.JavaBeanPropertyObservableMap;
+import org.eclipse.core.internal.databinding.beans.ListenerSupport;
 
 import java.lang.all;
 

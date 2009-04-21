@@ -12,6 +12,7 @@
  *******************************************************************************/
 
 module org.eclipse.core.internal.databinding.beans.JavaBeanObservableSet;
+import org.eclipse.core.internal.databinding.beans.ListenerSupport;
 
 import java.lang.all;
 

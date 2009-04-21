@@ -11,6 +11,7 @@
  *******************************************************************************/
 
 module org.eclipse.core.databinding.beans.PojoObservables;
+import org.eclipse.core.databinding.beans.BeansObservables;
 
 import java.lang.all;
 

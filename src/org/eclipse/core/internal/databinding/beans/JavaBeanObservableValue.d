@@ -11,6 +11,7 @@
  *     Brad Reynolds - bug 164134, 171616
  *******************************************************************************/
 module org.eclipse.core.internal.databinding.beans.JavaBeanObservableValue;
+import org.eclipse.core.internal.databinding.beans.ListenerSupport;
 
 import java.lang.all;
 

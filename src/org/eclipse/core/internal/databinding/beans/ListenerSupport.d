@@ -10,6 +10,7 @@
  *     Matthew Hall - bug 118516
  *******************************************************************************/
 module org.eclipse.core.internal.databinding.beans.ListenerSupport;
+import org.eclipse.core.internal.databinding.beans.IdentityWrapper;
 
 import java.lang.all;
 
