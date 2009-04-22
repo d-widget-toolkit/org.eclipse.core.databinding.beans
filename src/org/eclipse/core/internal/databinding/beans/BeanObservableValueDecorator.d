@@ -31,36 +31,36 @@ import org.eclipse.core.internal.databinding.Util;
  */
 public class BeanObservableValueDecorator : IObservableValue,
         IBeanObservable {
-    private final IObservableValue delegate;
+    private final IObservableValue delegate_;
     private final PropertyDescriptor descriptor;
     private final IObservableValue observed;
 
     /**
-     * @param delegate
+     * @param delegate_
      * @param observed 
      * @param descriptor
      */
-    public this(IObservableValue delegate, IObservableValue observed,
+    public this(IObservableValue delegate_, IObservableValue observed,
             PropertyDescriptor descriptor) {
-        this.delegate = delegate;
+        this.delegate_ = delegate_;
         this.observed = observed;
         this.descriptor = descriptor;
     }
 
     public void addChangeListener(IChangeListener listener) {
-        delegate.addChangeListener(listener);
+        delegate_.addChangeListener(listener);
     }
 
     public void addStaleListener(IStaleListener listener) {
-        delegate.addStaleListener(listener);
+        delegate_.addStaleListener(listener);
     }
 
     public void addValueChangeListener(IValueChangeListener listener) {
-        delegate.addValueChangeListener(listener);
+        delegate_.addValueChangeListener(listener);
     }
 
     public void dispose() {
-        delegate.dispose();
+        delegate_.dispose();
     }
     
     public override equals_t opEquals(Object obj) {
@@ -68,47 +68,47 @@ public class BeanObservableValueDecorator : IObservableValue,
             return true;
         if (obj is null)
             return false;
-        if (getClass() is obj.getClass()) {
+        if (Class.fromObject(this) is Class.fromObject(obj)) {
             BeanObservableValueDecorator other = cast(BeanObservableValueDecorator) obj;
-            return Util.equals(other.delegate, delegate);
+            return Util.equals(cast(Object)other.delegate_, cast(Object)delegate_);
         }
-        return delegate.equals(obj);
+        return (cast(Object)delegate_).opEquals(obj);
     }
 
     public Realm getRealm() {
-        return delegate.getRealm();
+        return delegate_.getRealm();
     }
 
     public Object getValue() {
-        return delegate.getValue();
+        return delegate_.getValue();
     }
 
     public Object getValueType() {
-        return delegate.getValueType();
+        return delegate_.getValueType();
     }
     
     public override hash_t toHash() {
-        return delegate.hashCode();
+        return (cast(Object)delegate_).toHash();
     }
 
     public bool isStale() {
-        return delegate.isStale();
+        return delegate_.isStale();
     }
 
     public void removeChangeListener(IChangeListener listener) {
-        delegate.removeChangeListener(listener);
+        delegate_.removeChangeListener(listener);
     }
 
     public void removeStaleListener(IStaleListener listener) {
-        delegate.removeStaleListener(listener);
+        delegate_.removeStaleListener(listener);
     }
 
     public void removeValueChangeListener(IValueChangeListener listener) {
-        delegate.removeValueChangeListener(listener);
+        delegate_.removeValueChangeListener(listener);
     }
 
     public void setValue(Object value) {
-        delegate.setValue(value);
+        delegate_.setValue(value);
     }
 
     /*
@@ -130,9 +130,9 @@ public class BeanObservableValueDecorator : IObservableValue,
     }
     
     /**
-     * @return observable value delegate
+     * @return observable value delegate_
      */
     public IObservableValue getDelegate() {
-        return delegate;
+        return delegate_;
     }
 }

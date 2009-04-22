@@ -73,17 +73,15 @@ public class JavaBeanPropertyObservableMap : ObservableMap ,
         this.descriptor = descriptor;
         if (attachListeners) {
             PropertyChangeListener listener = new class() PropertyChangeListener {
-                public void propertyChange(final PropertyChangeEvent event) {
+                public void propertyChange(PropertyChangeEvent event) {
                     if (!updating) {
-                        getRealm().exec(new class() Runnable {
-                            public void run() {
-                                Map oldValue = wrappedMap;
-                                Map newValue = cast(Map) event.getNewValue();
-                                wrappedMap = new HashMap(newValue);
-                                
-                                fireMapChange(Diffs.computeMapDiff(oldValue, newValue));
-                            }
-                        });
+                        getRealm().exec(dgRunnable((PropertyChangeEvent event_) {
+                            Map oldValue = wrappedMap;
+                            Map newValue = cast(Map) event_.getNewValue();
+                            wrappedMap = new HashMap(newValue);
+                            
+                            fireMapChange(Diffs.computeMapDiff(oldValue, newValue));
+                        }, event));
                     }
                 }
             };
@@ -118,7 +116,7 @@ public class JavaBeanPropertyObservableMap : ObservableMap ,
             if (!writeMethod.isAccessible()) {
                 writeMethod.setAccessible(true);
             }
-            writeMethod.invoke(object, new Object[] { newValue });
+            writeMethod.invoke(object, [ newValue ]);
             return;
         } catch (IllegalArgumentException e) {
             ex = e;
@@ -195,7 +193,7 @@ public class JavaBeanPropertyObservableMap : ObservableMap ,
         updating = true;
         try {
             Object result = wrappedMap.remove(key);
-            if (result!isnull) {
+            if (result !is null) {
                 setMap();
                 fireMapChange(Diffs.createMapDiffSingleRemove(key, result));
             }

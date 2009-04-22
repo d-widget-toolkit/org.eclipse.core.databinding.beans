@@ -75,7 +75,7 @@ public class JavaBeanObservableValue : AbstractObservableValue , IBeanObservable
         }
             
         PropertyChangeListener listener = new class() PropertyChangeListener {
-            public void propertyChange(java.beans.PropertyChangeEvent event) {
+            public void propertyChange(java.beans.PropertyChangeEvent.PropertyChangeEvent event) {
                 if (!updating) {
                     final ValueDiff diff = Diffs.createValueDiff(event.getOldValue(),
                                             event.getNewValue());
@@ -107,7 +107,7 @@ public class JavaBeanObservableValue : AbstractObservableValue , IBeanObservable
             if (!writeMethod.isAccessible()) {
                 writeMethod.setAccessible(true);
             }
-            writeMethod.invoke(object, new Object[] { value });
+            writeMethod.invoke(object, [ value ]);
             fireValueChange(Diffs.createValueDiff(oldValue, doGetValue()));
         } catch (InvocationTargetException e) {
             /*
@@ -116,7 +116,7 @@ public class JavaBeanObservableValue : AbstractObservableValue , IBeanObservable
              */
             throw new RuntimeException(e.getCause());
         } catch (Exception e) {
-            if cast(BeansObservables.DEBUG) {
+            if (BeansObservables.DEBUG) {
                 Policy
                         .getLog()
                         .log(
@@ -124,7 +124,7 @@ public class JavaBeanObservableValue : AbstractObservableValue , IBeanObservable
                                         IStatus.WARNING,
                                         Policy.JFACE_DATABINDING,
                                         IStatus.OK,
-                                        "Could not change value of " + object + "." + propertyDescriptor.getName(), e)); //$NON-NLS-1$ //$NON-NLS-2$
+                                        Format("Could not change value of {}.{}", object, propertyDescriptor.getName()), e)); //$NON-NLS-1$ //$NON-NLS-2$
             }
         } finally {
             updating = false;
@@ -136,7 +136,7 @@ public class JavaBeanObservableValue : AbstractObservableValue , IBeanObservable
             Method readMethod = propertyDescriptor.getReadMethod();
             if (readMethod is null) {
                 throw new BindingException(propertyDescriptor.getName()
-                        + " property does not have a read method."); //$NON-NLS-1$
+                        ~ " property does not have a read method."); //$NON-NLS-1$
             }
             if (!readMethod.isAccessible()) {
                 readMethod.setAccessible(true);
@@ -149,7 +149,7 @@ public class JavaBeanObservableValue : AbstractObservableValue , IBeanObservable
              */
             throw new RuntimeException(e.getCause());
         } catch (Exception e) {
-            if cast(BeansObservables.DEBUG) {
+            if (BeansObservables.DEBUG) {
                 Policy
                         .getLog()
                         .log(
@@ -157,7 +157,7 @@ public class JavaBeanObservableValue : AbstractObservableValue , IBeanObservable
                                         IStatus.WARNING,
                                         Policy.JFACE_DATABINDING,
                                         IStatus.OK,
-                                        "Could not read value of " + object + "." + propertyDescriptor.getName(), e)); //$NON-NLS-1$ //$NON-NLS-2$
+                                        Format("Could not read value of {}.{}", object, propertyDescriptor.getName()), e)); //$NON-NLS-1$ //$NON-NLS-2$
             }
             return null;
         }

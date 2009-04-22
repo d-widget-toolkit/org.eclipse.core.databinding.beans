@@ -37,16 +37,15 @@ public class JavaBeanObservableMap : ComputedObservableMap ,
 
     private PropertyDescriptor propertyDescriptor;
     
-    private PropertyChangeListener elementListener = new class() PropertyChangeListener {
-        public void propertyChange(final java.beans.PropertyChangeEvent event) {
+    private PropertyChangeListener elementListener;
+    class ElementListener : PropertyChangeListener {
+        public void propertyChange(java.beans.PropertyChangeEvent.PropertyChangeEvent event) {
             if (!updating) {
-                getRealm().exec(new class() Runnable {
-                    public void run() {
-                        fireMapChange(Diffs.createMapDiffSingleChange(
-                                event.getSource(), event.getOldValue(), event
-                                .getNewValue()));
-                    }
-                });
+                getRealm().exec(dgRunnable((java.beans.PropertyChangeEvent.PropertyChangeEvent event_) {
+                    fireMapChange(Diffs.createMapDiffSingleChange(
+                            event_.getSource(), event_.getOldValue(), event_
+                            .getNewValue()));
+                }, event));
             }
         }
     };
@@ -73,6 +72,7 @@ public class JavaBeanObservableMap : ComputedObservableMap ,
      */
     public this(IObservableSet domain,
             PropertyDescriptor propertyDescriptor, bool attachListeners) {
+elementListener = new ElementListener();
         super(domain);
 
         this.propertyDescriptor = propertyDescriptor;
@@ -118,7 +118,7 @@ public class JavaBeanObservableMap : ComputedObservableMap ,
         try {
             Object oldValue = get(key);
             propertyDescriptor.getWriteMethod().invoke(key,
-                    new Object[] { value });
+                    [ value ]);
             keySet().add(key);
             return oldValue;
         } catch (Exception e) {
@@ -133,7 +133,7 @@ public class JavaBeanObservableMap : ComputedObservableMap ,
      * @see org.eclipse.core.databinding.beans.IBeanObservable#getObserved()
      */
     public Object getObserved() {
-        return keySet();
+        return cast(Object)keySet();
     }
 
     /* (non-Javadoc)

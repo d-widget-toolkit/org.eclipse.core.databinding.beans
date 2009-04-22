@@ -40,7 +40,7 @@ public class IdentityWrapper {
     }
 
     public override equals_t opEquals(Object obj) {
-        if (obj is null || obj.getClass() !is IdentityWrapper.class) {
+        if (obj is null || Class.fromObject(obj) !is Class.fromType!(IdentityWrapper)) {
             return false;
         }
         return o is (cast(IdentityWrapper) obj).o;

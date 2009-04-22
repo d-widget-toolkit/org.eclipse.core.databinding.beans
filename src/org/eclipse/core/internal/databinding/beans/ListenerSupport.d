@@ -36,7 +36,7 @@ import org.eclipse.core.runtime.Status;
  */
 public class ListenerSupport {
 
-    private Set elementsListenedTo = new HashSet();
+    private Set elementsListenedTo;
     
     private PropertyChangeListener listener;
 
@@ -51,16 +51,23 @@ public class ListenerSupport {
      *      when the provided <code>propertyName</code> changes.
      * @param propertyName
      */
-    public this(final PropertyChangeListener listener,
-            final String propertyName) {
-        Assert.isNotNull(listener, "Listener cannot be null"); //$NON-NLS-1$
+    public this(PropertyChangeListener listener,
+             String propertyName) {
+elementsListenedTo = new HashSet();
+        Assert.isNotNull(cast(Object)listener, "Listener cannot be null"); //$NON-NLS-1$
         Assert.isNotNull(propertyName, "Property name cannot be null"); //$NON-NLS-1$
 
         this.propertyName = propertyName;
-        this.listener = new class() PropertyChangeListener {
+        this.listener = new class( listener, propertyName ) PropertyChangeListener {
+            PropertyChangeListener listener_;
+            String propertyName_;
+            this( PropertyChangeListener l, String n ){
+                listener_=l;
+                propertyName_=n;
+            }
             public void propertyChange(PropertyChangeEvent evt) {
-                if (propertyName.equals(evt.getPropertyName())) {
-                    listener.propertyChange(evt);
+                if (propertyName_ == evt.getPropertyName()) {
+                    listener_.propertyChange(evt);
                 }
             }
         };
@@ -87,7 +94,7 @@ public class ListenerSupport {
      */
     public void setHookTargets(Object[] targets) {      
         Set elementsToUnhook = new HashSet(elementsListenedTo);
-        if (targets!isnull) {
+        if (targets !is null) {
             for (int i = 0; i < targets.length; i++) {
                 Object newValue = targets[i];
                 IdentityWrapper identityWrapper = new IdentityWrapper(newValue);
@@ -98,7 +105,7 @@ public class ListenerSupport {
             
         for (Iterator it = elementsToUnhook.iterator(); it.hasNext();) {
             Object o = it.next();
-            if (o.getClass()!isIdentityWrapper.class)
+            if (Class.fromObject(o) !is Class.fromType!(IdentityWrapper))
                 o = new IdentityWrapper(o);
             elementsListenedTo.remove(o);
             unhookListener(o);
@@ -111,7 +118,7 @@ public class ListenerSupport {
      * @param target
      */
     public void unhookListener(Object target) {
-        if (target.getClass() is IdentityWrapper.class)
+        if (Class.fromObject(target) is Class.fromType!(IdentityWrapper))
             target = (cast(IdentityWrapper) target).unwrap();
 
         if (processListener(
@@ -125,7 +132,7 @@ public class ListenerSupport {
      * 
      */
     public void dispose() {
-        if (elementsListenedTo!isnull) {
+        if (elementsListenedTo !is null) {
             Object[] targets = elementsListenedTo.toArray();        
             for (int i = 0; i < targets.length; i++) {      
                 unhookListener(targets[i]);
@@ -140,7 +147,7 @@ public class ListenerSupport {
      */
     public Object[] getHookedTargets() {
         Object[] targets = null;
-        if (elementsListenedTo!isnull && elementsListenedTo.size()>0) {
+        if (elementsListenedTo !is null && elementsListenedTo.size()>0) {
             Object[] identityList = elementsListenedTo.toArray();
             targets = new Object[identityList.length];
             for (int i = 0; i < identityList.length; i++) 
@@ -170,22 +177,22 @@ public class ListenerSupport {
 
         try {
             try {
-                method = target.getClass().getMethod(
+                method = Class.fromObject(target).getMethod(
                         methodName,
-                        new Class[] { String.class,
-                                PropertyChangeListener.class });
+                        [ Class.fromType!(String),
+                                Class.fromType!(PropertyChangeListener) ]);
 
-                parameters = new Object[] { propertyName, listener };
+                parameters = [ cast(Object)stringcast(propertyName), cast(Object)listener ];
             } catch (NoSuchMethodException e) {
-                method = target.getClass().getMethod(methodName,
-                        new Class[] { PropertyChangeListener.class });
+                method = Class.fromObject(target).getMethod(methodName,
+                        [ Class.fromType!(PropertyChangeListener) ]);
 
-                parameters = new Object[] { listener };
+                parameters = [ cast(Object) listener ];
             }
         } catch (SecurityException e) {
             // ignore
         } catch (NoSuchMethodException e) {
-            log(IStatus.WARNING, message + target, e);
+            log(IStatus.WARNING, Format("{}{}", message, target), e);
         }
 
         if (method !is null) {
@@ -196,11 +203,11 @@ public class ListenerSupport {
                 method.invoke(target, parameters);
                 return true;
             } catch (IllegalArgumentException e) {
-                log(IStatus.WARNING, message + target, e);
+                log(IStatus.WARNING, Format("{}{}", message, target), e);
             } catch (IllegalAccessException e) {
-                log(IStatus.WARNING, message + target, e);
+                log(IStatus.WARNING, Format("{}{}", message, target), e);
             } catch (InvocationTargetException e) {
-                log(IStatus.WARNING, message + target, e);
+                log(IStatus.WARNING, Format("{}{}", message, target), e);
             }
         }
         return false;
@@ -210,7 +217,7 @@ public class ListenerSupport {
      * Logs a message to the Data Binding logger.
      */
     private void log(int severity, String message, Throwable throwable) {
-        if cast(BeansObservables.DEBUG) {
+        if (BeansObservables.DEBUG) {
             Policy.getLog().log(
                     new Status(severity, Policy.JFACE_DATABINDING, IStatus.OK,
                             message, throwable));

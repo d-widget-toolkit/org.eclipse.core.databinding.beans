@@ -75,7 +75,7 @@ public class JavaBeanObservableSet : ObservableSet , IBeanObservable {
         this.descriptor = descriptor;
         if (attachListeners) {
             PropertyChangeListener listener = new class() PropertyChangeListener {
-                public void propertyChange(java.beans.PropertyChangeEvent event) {
+                public void propertyChange(java.beans.PropertyChangeEvent.PropertyChangeEvent event) {
                     if (!updating) {
                         getRealm().exec(new class() Runnable {
                             public void run() {
@@ -124,7 +124,7 @@ public class JavaBeanObservableSet : ObservableSet , IBeanObservable {
 
         Object result = primGetValues();
         if (descriptor.getPropertyType().isArray())
-            values = cast(Object[]) result;
+            values = arrayFromObject!(Object)( result );
         else {
             // TODO add jUnit for POJO (var. SettableValue) collections
             Collection list = cast(Collection) result;
@@ -140,10 +140,10 @@ public class JavaBeanObservableSet : ObservableSet , IBeanObservable {
         if (descriptor.getPropertyType().isArray()) {
             Class componentType = descriptor.getPropertyType()
                     .getComponentType();
-            Object[] newArray = cast(Object[]) Array.newInstance(componentType,
-                    wrappedSet.size());
+            Object[] newArray = arrayFromObject!(Object)(Array.newInstance(componentType,
+                    wrappedSet.size()));
             wrappedSet.toArray(newArray);
-            primSetValues(newArray);
+            primSetValues(new ArrayWrapperObject(newArray));
         } else {
             // assume that it is a java.util.Set
             primSetValues(new HashSet(wrappedSet));
@@ -273,7 +273,7 @@ public class JavaBeanObservableSet : ObservableSet , IBeanObservable {
             if (!writeMethod.isAccessible()) {
                 writeMethod.setAccessible(true);
             }
-            writeMethod.invoke(object, new Object[] { newValue });
+            writeMethod.invoke(object, [ newValue ]);
             return;
         } catch (IllegalArgumentException e) {
             ex = e;

@@ -37,7 +37,7 @@ import org.eclipse.core.internal.databinding.Util;
  */
 public class BeanObservableListDecorator : AbstractObservableList
         , IBeanObservable {
-    private IObservableList delegate;
+    private IObservableList delegate_;
     private IStaleListener delegateStaleListener;
     private IListChangeListener delegateListChangeListener;
 
@@ -45,40 +45,40 @@ public class BeanObservableListDecorator : AbstractObservableList
     private PropertyDescriptor propertyDescriptor;
 
     /**
-     * @param delegate
+     * @param delegate_
      * @param observed
      * @param propertyDescriptor
      */
-    public this(IObservableList delegate,
+    public this(IObservableList delegate_,
             Object observed, PropertyDescriptor propertyDescriptor) {
-        super(delegate.getRealm());
-        this.delegate = delegate;
+        super(delegate_.getRealm());
+        this.delegate_ = delegate_;
         this.observed = observed;
         this.propertyDescriptor = propertyDescriptor;
     }
 
     public void add(int index, Object element) {
-        delegate.add(index, element);
+        delegate_.add(index, element);
     }
 
     public bool add(Object o) {
-        return delegate.add(o);
+        return delegate_.add(o);
     }
 
     public bool addAll(Collection c) {
-        return delegate.addAll(c);
+        return delegate_.addAll(c);
     }
 
     public bool addAll(int index, Collection c) {
-        return delegate.addAll(index, c);
+        return delegate_.addAll(index, c);
     }
 
     public void clear() {
-        delegate.clear();
+        delegate_.clear();
     }
 
     public void dispose() {
-        delegate.dispose();
+        delegate_.dispose();
         super.dispose();
     }
 
@@ -88,92 +88,92 @@ public class BeanObservableListDecorator : AbstractObservableList
             return true;
         if (o is null)
             return true;
-        if (getClass() is o.getClass()) {
+        if (Class.fromObject(this) is Class.fromObject(o)) {
             BeanObservableListDecorator other = cast(BeanObservableListDecorator) o;
-            return Util.equals(other.delegate, delegate);
+            return Util.equals(cast(Object)other.delegate_, cast(Object)delegate_);
         }
-        return delegate.equals(o);
+        return delegate_.opEquals(o);
     }
 
     public Object get(int index) {
         getterCalled();
-        return delegate.get(index);
+        return delegate_.get(index);
     }
 
     public Object getElementType() {
-        return delegate.getElementType();
+        return delegate_.getElementType();
     }
 
     public override hash_t toHash() {
         getterCalled();
-        return delegate.hashCode();
+        return (cast(Object)delegate_).toHash();
     }
 
     public int indexOf(Object o) {
         getterCalled();
-        return delegate.indexOf(o);
+        return delegate_.indexOf(o);
     }
 
     public Iterator iterator() {
         getterCalled();
-        return delegate.iterator();
+        return delegate_.iterator();
     }
 
     public int lastIndexOf(Object o) {
         getterCalled();
-        return delegate.lastIndexOf(o);
+        return delegate_.lastIndexOf(o);
     }
 
     public ListIterator listIterator() {
         getterCalled();
-        return delegate.listIterator();
+        return delegate_.listIterator();
     }
 
     public ListIterator listIterator(int index) {
         getterCalled();
-        return delegate.listIterator(index);
+        return delegate_.listIterator(index);
     }
 
     public Object move(int oldIndex, int newIndex) {
-        return delegate.move(oldIndex, newIndex);
+        return delegate_.move(oldIndex, newIndex);
     }
 
     public Object remove(int index) {
-        return delegate.remove(index);
+        return delegate_.remove(index);
     }
 
     public bool remove(Object o) {
-        return delegate.remove(o);
+        return delegate_.remove(o);
     }
 
     public bool removeAll(Collection c) {
-        return delegate.removeAll(c);
+        return delegate_.removeAll(c);
     }
 
     public bool retainAll(Collection c) {
-        return delegate.retainAll(c);
+        return delegate_.retainAll(c);
     }
 
     public Object set(int index, Object element) {
-        return delegate.set(index, element);
+        return delegate_.set(index, element);
     }
 
     protected int doGetSize() {
-        return delegate.size();
+        return delegate_.size();
     }
 
     public List subList(int fromIndex, int toIndex) {
         getterCalled();
-        return delegate.subList(fromIndex, toIndex);
+        return delegate_.subList(fromIndex, toIndex);
     }
 
     public Object[] toArray() {
         getterCalled();
-        return delegate.toArray();
+        return delegate_.toArray();
     }
 
     public Object[] toArray(Object[] a) {
-        return delegate.toArray(a);
+        return delegate_.toArray(a);
     }
 
     protected void firstListenerAdded() {
@@ -182,21 +182,21 @@ public class BeanObservableListDecorator : AbstractObservableList
                 fireStale();
             }
         };
-        delegate.addStaleListener(delegateStaleListener);
+        delegate_.addStaleListener(delegateStaleListener);
 
         delegateListChangeListener = new class() IListChangeListener {
             public void handleListChange(ListChangeEvent event) {
                 fireListChange(event.diff);
             }
         };
-        delegate.addListChangeListener(delegateListChangeListener);
+        delegate_.addListChangeListener(delegateListChangeListener);
     }
 
     protected void lastListenerRemoved() {
-        delegate.removeStaleListener(delegateStaleListener);
+        delegate_.removeStaleListener(delegateStaleListener);
         delegateStaleListener = null;
 
-        delegate.removeListChangeListener(delegateListChangeListener);
+        delegate_.removeListChangeListener(delegateListChangeListener);
         delegateListChangeListener = null;
     }
 
@@ -208,7 +208,7 @@ public class BeanObservableListDecorator : AbstractObservableList
      * @return list being delegated to
      */
     public IObservableList getDelegate() {
-        return delegate;
+        return delegate_;
     }
 
     /*

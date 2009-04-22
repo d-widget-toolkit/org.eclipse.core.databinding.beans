@@ -78,7 +78,7 @@ final public class PojoObservables {
             String propertyName) {
 
         PropertyDescriptor descriptor = BeansObservables.getPropertyDescriptor(
-                pojo.getClass(), propertyName);
+                Class.fromObject(pojo), propertyName);
         return new JavaBeanObservableValue(realm, pojo, descriptor, false);
     }
 
@@ -140,7 +140,7 @@ final public class PojoObservables {
     public static IObservableMap observeMap(Realm realm, Object pojo,
             String propertyName) {
         PropertyDescriptor descriptor = BeansObservables.getPropertyDescriptor(
-                pojo.getClass(), propertyName);
+                Class.fromObject(pojo), propertyName);
         return new JavaBeanPropertyObservableMap(realm, pojo, descriptor, false);
     }
 
@@ -190,7 +190,7 @@ final public class PojoObservables {
     public static IObservableList observeList(Realm realm, Object pojo,
             String propertyName, Class elementType) {
         PropertyDescriptor propertyDescriptor = BeansObservables
-                .getPropertyDescriptor(pojo.getClass(), propertyName);
+                .getPropertyDescriptor(Class.fromObject(pojo), propertyName);
         elementType = BeansObservables.getCollectionElementType(elementType,
                 propertyDescriptor);
 
@@ -228,7 +228,7 @@ final public class PojoObservables {
     public static IObservableSet observeSet(Realm realm, Object pojo,
             String propertyName, Class elementType) {
         PropertyDescriptor propertyDescriptor = BeansObservables
-                .getPropertyDescriptor(pojo.getClass(), propertyName);
+                .getPropertyDescriptor(Class.fromObject(pojo), propertyName);
         elementType = BeansObservables.getCollectionElementType(elementType,
                 propertyDescriptor);
 
@@ -246,11 +246,17 @@ final public class PojoObservables {
      *            the name of the property
      * @return an observable value factory
      */
-    public static IObservableFactory valueFactory(final Realm realm,
-            final String propertyName) {
-        return new class() IObservableFactory {
+    public static IObservableFactory valueFactory(Realm realm,
+            String propertyName) {
+        return new class(realm, propertyName) IObservableFactory {
+            Realm realm_;
+            String propertyName_;
+            this(Realm r, String p){
+                realm_=r;
+                propertyName_=p;
+            }
             public IObservable createObservable(Object target) {
-                return observeValue(realm, target, propertyName);
+                return observeValue(realm_, target, propertyName_);
             }
         };
     }
@@ -266,11 +272,19 @@ final public class PojoObservables {
      * @param elementType
      * @return an observable list factory
      */
-    public static IObservableFactory listFactory(final Realm realm,
-            final String propertyName, final Class elementType) {
-        return new class() IObservableFactory {
+    public static IObservableFactory listFactory(Realm realm,
+            String propertyName, Class elementType) {
+        return new class(realm, propertyName, elementType) IObservableFactory {
+            Realm realm_;
+            String propertyName_;
+            Class elementType_;
+            this(Realm r, String p, Class e){
+                realm_=r;
+                propertyName_=p;
+                elementType_=e;
+            }
             public IObservable createObservable(Object target) {
-                return observeList(realm, target, propertyName, elementType);
+                return observeList(realm_, target, propertyName_, elementType_);
             }
         };
     }
@@ -285,11 +299,17 @@ final public class PojoObservables {
      *            the name of the property
      * @return an observable set factory
      */
-    public static IObservableFactory setFactory(final Realm realm,
-            final String propertyName) {
-        return new class() IObservableFactory {
+    public static IObservableFactory setFactory(Realm realm,
+            String propertyName) {
+        return new class(realm, propertyName) IObservableFactory {
+            Realm realm_;
+            String propertyName_;
+            this(Realm r, String p){
+                realm_=r;
+                propertyName_=p;
+            }
             public IObservable createObservable(Object target) {
-                return observeSet(realm, target, propertyName);
+                return observeSet(realm_, target, propertyName_);
             }
         };
     }
@@ -301,11 +321,19 @@ final public class PojoObservables {
      *            can be <code>null</code>
      * @return an observable set factory for creating observable sets
      */
-    public static IObservableFactory setFactory(final Realm realm,
-            final String propertyName, final Class elementType) {
-        return new class() IObservableFactory {
+    public static IObservableFactory setFactory(Realm realm,
+            String propertyName, Class elementType) {
+        return new class(realm, propertyName, elementType) IObservableFactory {
+            Realm realm_;
+            String propertyName_;
+            Class elementType_;
+            this(Realm r, String p, Class e){
+                realm_=r;
+                propertyName_=p;
+                elementType_=e;
+            }
             public IObservable createObservable(Object target) {
-                return observeSet(realm, target, propertyName, elementType);
+                return observeSet(realm_, target, propertyName_, elementType_);
             }
         };
     }
@@ -323,11 +351,17 @@ final public class PojoObservables {
      *            the name of the property
      * @return a factory for creating {@link IObservableMap} objects.
      */
-    public static IObservableFactory mapPropertyFactory(final Realm realm,
-            final String propertyName) {
-        return new class() IObservableFactory {
+    public static IObservableFactory mapPropertyFactory(Realm realm,
+            String propertyName) {
+        return new class(realm, propertyName) IObservableFactory {
+            Realm realm_;
+            String propertyName_;
+            this(Realm r, String p){
+                realm_=r;
+                propertyName_=p;
+            }
             public IObservable createObservable(Object target) {
-                return observeMap(realm, target, propertyName);
+                return observeMap(realm_, target, propertyName_);
             }
         };
     }
@@ -380,7 +414,7 @@ final public class PojoObservables {
                 master, listFactory(realm, propertyName, propertyType),
                 propertyType);
         BeanObservableListDecorator decorator = new BeanObservableListDecorator(
-                observableList, master, BeansObservables
+                observableList, cast(Object)master, BeansObservables
                         .getValueTypePropertyDescriptor(master, propertyName));
 
         return decorator;
@@ -408,7 +442,7 @@ final public class PojoObservables {
                 master, setFactory(realm, propertyName, propertyType),
                 propertyType);
         BeanObservableSetDecorator decorator = new BeanObservableSetDecorator(
-                observableSet, master, BeansObservables
+                observableSet, cast(Object)master, BeansObservables
                         .getValueTypePropertyDescriptor(master, propertyName));
 
         return decorator;
@@ -429,7 +463,7 @@ final public class PojoObservables {
         IObservableMap observableMap = MasterDetailObservables.detailMap(
                 master, mapPropertyFactory(realm, propertyName));
         BeanObservableMapDecorator decorator = new BeanObservableMapDecorator(
-                observableMap, master, BeansObservables
+                observableMap, cast(Object)master, BeansObservables
                         .getValueTypePropertyDescriptor(master, propertyName));
         return decorator;
     }

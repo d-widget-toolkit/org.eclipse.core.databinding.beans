@@ -32,58 +32,74 @@ import org.eclipse.core.internal.databinding.Util;
  * @since 3.3
  */
 public class BeanObservableSetDecorator : IObservableSet, IBeanObservable {
-    private IObservableSet delegate;
+    private IObservableSet delegate_;
     private Object observed;
     private PropertyDescriptor propertyDescriptor;
 
+    public int opApply (int delegate(ref Object value) dg){
+        auto it = iterator();
+        while(it.hasNext()){
+            auto v = it.next();
+            int res = dg( v );
+            if( res ) return res;
+        }
+        return 0;
+    }
+
     /**
-     * @param delegate 
+     * @param delegate_ 
      * @param observed 
      * @param propertyDescriptor
      */
-    public this(IObservableSet delegate,
+    public this(IObservableSet delegate_,
             Object observed,
             PropertyDescriptor propertyDescriptor) {
         
-        this.delegate = delegate;
+        this.delegate_ = delegate_;
         this.observed = observed;
         this.propertyDescriptor = propertyDescriptor;
     }
 
+    public bool add(String o){
+        return add(stringcast(o));
+    }
     public bool add(Object o) {
-        return delegate.add(o);
+        return delegate_.add(o);
     }
 
     public bool addAll(Collection c) {
-        return delegate.addAll(c);
+        return delegate_.addAll(c);
     }
 
     public void addChangeListener(IChangeListener listener) {
-        delegate.addChangeListener(listener);
+        delegate_.addChangeListener(listener);
     }
 
     public void addSetChangeListener(ISetChangeListener listener) {
-        delegate.addSetChangeListener(listener);
+        delegate_.addSetChangeListener(listener);
     }
 
     public void addStaleListener(IStaleListener listener) {
-        delegate.addStaleListener(listener);
+        delegate_.addStaleListener(listener);
     }
 
     public void clear() {
-        delegate.clear();
+        delegate_.clear();
     }
 
+    public bool contains(String o) {
+        return contains(stringcast(o));
+    }
     public bool contains(Object o) {
-        return delegate.contains(o);
+        return delegate_.contains(o);
     }
 
     public bool containsAll(Collection c) {
-        return delegate.containsAll(c);
+        return delegate_.containsAll(c);
     }
 
     public void dispose() {
-        delegate.dispose();
+        delegate_.dispose();
     }
 
     public override equals_t opEquals(Object obj) {
@@ -91,71 +107,74 @@ public class BeanObservableSetDecorator : IObservableSet, IBeanObservable {
             return true;
         if (obj is null)
             return false;
-        if (getClass() is obj.getClass()) {
+        if (Class.fromObject(this) is Class.fromObject(obj)) {
             BeanObservableSetDecorator other = cast(BeanObservableSetDecorator) obj;
-            return Util.equals(other.delegate, delegate);
+            return Util.equals(cast(Object)other.delegate_, cast(Object)delegate_);
         }
-        return delegate.equals(obj);
+        return (cast(Object)delegate_).opEquals(obj);
     }
 
     public Object getElementType() {
-        return delegate.getElementType();
+        return delegate_.getElementType();
     }
 
     public Realm getRealm() {
-        return delegate.getRealm();
+        return delegate_.getRealm();
     }
 
     public override hash_t toHash() {
-        return delegate.hashCode();
+        return (cast(Object)delegate_).toHash();
     }
 
     public bool isEmpty() {
-        return delegate.isEmpty();
+        return delegate_.isEmpty();
     }
 
     public bool isStale() {
-        return delegate.isStale();
+        return delegate_.isStale();
     }
 
     public Iterator iterator() {
-        return delegate.iterator();
+        return delegate_.iterator();
     }
 
+    public bool remove(String o){
+        return remove(stringcast(o));
+    }
     public bool remove(Object o) {
-        return delegate.remove(o);
+        return delegate_.remove(o);
     }
 
     public bool removeAll(Collection c) {
-        return delegate.removeAll(c);
+        return delegate_.removeAll(c);
     }
 
     public void removeChangeListener(IChangeListener listener) {
-        delegate.removeChangeListener(listener);
+        delegate_.removeChangeListener(listener);
     }
 
     public void removeSetChangeListener(ISetChangeListener listener) {
-        delegate.removeSetChangeListener(listener);
+        delegate_.removeSetChangeListener(listener);
     }
 
     public void removeStaleListener(IStaleListener listener) {
-        delegate.removeStaleListener(listener);
+        delegate_.removeStaleListener(listener);
     }
 
     public bool retainAll(Collection c) {
-        return delegate.retainAll(c);
+        return delegate_.retainAll(c);
     }
 
     public int size() {
-        return delegate.size();
+        return delegate_.size();
     }
 
     public Object[] toArray() {
-        return delegate.toArray();
+        return delegate_.toArray();
     }
 
     public Object[] toArray(Object[] a) {
-        return delegate.toArray(a);
+        return delegate_.toArray(a);
     }
 
     /* (non-Javadoc)
@@ -176,6 +195,6 @@ public class BeanObservableSetDecorator : IObservableSet, IBeanObservable {
      * @return the wrapped set
      */
     public IObservableSet getDelegate() {
-        return delegate;
+        return delegate_;
     }   
 }

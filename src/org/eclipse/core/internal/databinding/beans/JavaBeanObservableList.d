@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+static import java.beans.PropertyChangeEvent;
 
 import org.eclipse.core.databinding.BindingException;
 import org.eclipse.core.databinding.beans.IBeanObservable;
@@ -78,7 +79,7 @@ public class JavaBeanObservableList : ObservableList ,
 
         if (attachListeners) {
             PropertyChangeListener listener = new class() PropertyChangeListener {
-                public void propertyChange(java.beans.PropertyChangeEvent event) {
+                public void propertyChange(java.beans.PropertyChangeEvent.PropertyChangeEvent event) {
                     if (!updating) {
                         getRealm().exec(new class() Runnable {
                             public void run() {
@@ -129,7 +130,7 @@ public class JavaBeanObservableList : ObservableList ,
 
         Object result = primGetValues();
         if (descriptor.getPropertyType().isArray())
-            values = cast(Object[]) result;
+            values = arrayFromObject!(Object)( result );
         else {
             // TODO add jUnit for POJO (var. SettableValue) collections
             Collection list = cast(Collection) result;
@@ -154,10 +155,10 @@ public class JavaBeanObservableList : ObservableList ,
         if (descriptor.getPropertyType().isArray()) {
             Class componentType = descriptor.getPropertyType()
                     .getComponentType();
-            Object[] newArray = cast(Object[]) Array.newInstance(componentType,
-                    wrappedList.size());
+            Object[] newArray = arrayFromObject!(Object)( Array.newInstance(componentType,
+                    wrappedList.size()));
             wrappedList.toArray(newArray);
-            primSetValues(newArray);
+            primSetValues(new ArrayWrapperObject(newArray));
         } else {
             // assume that it is a java.util.List
             primSetValues(new ArrayList(wrappedList));
@@ -171,7 +172,7 @@ public class JavaBeanObservableList : ObservableList ,
             if (!writeMethod.isAccessible()) {
                 writeMethod.setAccessible(true);
             }
-            writeMethod.invoke(object, new Object[] { newValue });
+            writeMethod.invoke(object, [ newValue ]);
             return;
         } catch (IllegalArgumentException e) {
             ex = e;
@@ -205,10 +206,10 @@ public class JavaBeanObservableList : ObservableList ,
             int size = wrappedList.size();
             if (oldIndex < 0 || oldIndex >= size)
                 throw new IndexOutOfBoundsException(
-                        "oldIndex: " + oldIndex + ", size:" + size); //$NON-NLS-1$ //$NON-NLS-2$
+                        Format("oldIndex: {}, size:{}", oldIndex, size)); //$NON-NLS-1$ //$NON-NLS-2$
             if (newIndex < 0 || newIndex >= size)
                 throw new IndexOutOfBoundsException(
-                        "newIndex: " + newIndex + ", size:" + size); //$NON-NLS-1$ //$NON-NLS-2$
+                        Format("newIndex: {}, size:{}", newIndex, size)); //$NON-NLS-1$ //$NON-NLS-2$
             if (oldIndex is newIndex)
                 return wrappedList.get(oldIndex);
             Object element = wrappedList.remove(oldIndex);
